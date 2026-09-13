@@ -1,3 +1,12 @@
+const calculateCircularHourDistance = (hour1, hour2) => {
+    const difference = Math.abs(hour1 - hour2);
+
+    return Math.min(
+        difference,
+        24 - difference
+    );
+};
+
 const analyzeBehavior = (event, baseline) => {
     const signals = [];
     let score = 0;
@@ -65,21 +74,53 @@ const analyzeBehavior = (event, baseline) => {
         event.timezone &&
         baseline.loginHours.length >= 3
     ) {
-        const currentHour = Number(
-            new Intl.DateTimeFormat("en-US", {
-                hour: "numeric",
-                hour12: false,
-                timeZone: event.timezone
-            }).format(new Date(event.timestamp))
-        );
+        try {
+            const formatter = new Intl.DateTimeFormat(
+                "en-US",
+                {
+                    hour: "2-digit",
+                    hour12: false,
+                    timeZone: event.timezone
+                }
+            );
 
-        const isNormalTime = baseline.loginHours.some(
-            (hour) => Math.abs(hour - currentHour) <= 2
-        );
+            const parts = formatter.formatToParts(
+                new Date(event.timestamp)
+            );
 
-        if (!isNormalTime) {
-            score += 20;
-            signals.push("Unusual login time");
+            const hourPart = parts.find(
+                (part) => part.type === "hour"
+            );
+
+            if (hourPart) {
+                let currentHour =
+                    Number(hourPart.value);
+
+                if (currentHour === 24) {
+                    currentHour = 0;
+                }
+
+                const isNormalTime =
+                    baseline.loginHours.some(
+                        (hour) =>
+                            calculateCircularHourDistance(
+                                hour,
+                                currentHour
+                            ) <= 2
+                    );
+
+                if (!isNormalTime) {
+                    score += 20;
+                    signals.push(
+                        "Unusual login time"
+                    );
+                }
+            }
+        } catch (error) {
+            console.error(
+                `Invalid timezone "${event.timezone}":`,
+                error.message
+            );
         }
     }
 

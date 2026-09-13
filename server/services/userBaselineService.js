@@ -1,22 +1,23 @@
 const AuthEvent = require("../models/AuthEvent");
 
 const getUserBaseline = async (userId) => {
-    const successfulLogins = await AuthEvent.find({
+    const trustedLogins = await AuthEvent.find({
         userId,
-        eventType: "LOGIN_SUCCESS"
+        eventType: "LOGIN_SUCCESS",
+        riskLevel: "LOW"
     })
         .sort({ timestamp: -1 })
         .limit(50);
 
     const baseline = {
-        totalSuccessfulLogins: successfulLogins.length,
+        totalSuccessfulLogins: trustedLogins.length,
         devices: [],
         cities: [],
         browsers: [],
         loginHours: []
     };
 
-    for (const event of successfulLogins) {
+    for (const event of trustedLogins) {
 
         // Known devices
         if (
@@ -42,17 +43,42 @@ const getUserBaseline = async (userId) => {
             baseline.browsers.push(event.browser);
         }
 
-        // Convert timestamp into user's local hour
+        // Convert UTC timestamp into user's local hour
         if (event.timestamp && event.timezone) {
-            const localHour = Number(
-                new Intl.DateTimeFormat("en-US", {
-                    hour: "numeric",
-                    hour12: false,
-                    timeZone: event.timezone
-                }).format(new Date(event.timestamp))
-            );
+            try {
+                const formatter = new Intl.DateTimeFormat(
+                    "en-US",
+                    {
+                        hour: "2-digit",
+                        hour12: false,
+                        timeZone: event.timezone
+                    }
+                );
 
-            baseline.loginHours.push(localHour);
+                const parts = formatter.formatToParts(
+                    new Date(event.timestamp)
+                );
+
+                const hourPart = parts.find(
+                    (part) => part.type === "hour"
+                );
+
+                if (hourPart) {
+                    let localHour = Number(hourPart.value);
+
+                    // Some environments represent midnight as 24.
+                    if (localHour === 24) {
+                        localHour = 0;
+                    }
+
+                    baseline.loginHours.push(localHour);
+                }
+            } catch (error) {
+                console.error(
+                    `Invalid timezone "${event.timezone}":`,
+                    error.message
+                );
+            }
         }
     }
 
