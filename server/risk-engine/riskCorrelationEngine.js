@@ -4,7 +4,10 @@ const calculateRiskCorrelation = ({
     behaviorConfidence,
     behaviorSignals,
     eventType,
-    recentFailedAttempts
+    recentFailedAttempts,
+    credentialRiskScore,
+    credentialRiskLevel,
+    credentialRiskReason
 }) => {
 
     let score = 0;
@@ -88,13 +91,41 @@ const calculateRiskCorrelation = ({
     }
 
     // --------------------------------
-    // 5. LIMIT SCORE
+    // 5. CREDENTIAL RISK
+    // --------------------------------
+
+    if (
+        credentialRiskLevel === "HIGH" &&
+        credentialRiskScore > 0
+    ) {
+        // Credential risk is weighted instead of
+        // directly adding the entire component score.
+        const credentialContribution = Math.round(
+            credentialRiskScore * 0.75
+        );
+
+        score += credentialContribution;
+
+        evidence.push(
+            credentialRiskReason ||
+            "Credential exposure risk detected"
+        );
+
+        if (eventType === "LOGIN_SUCCESS") {
+            actions.push(
+                "Consider credential reset"
+            );
+        }
+    }
+
+    // --------------------------------
+    // 6. LIMIT SCORE
     // --------------------------------
 
     score = Math.min(score, 100);
 
     // --------------------------------
-    // 6. FINAL RISK LEVEL
+    // 7. FINAL RISK LEVEL
     // --------------------------------
 
     let level;
@@ -110,7 +141,7 @@ const calculateRiskCorrelation = ({
     }
 
     // --------------------------------
-    // 7. DEFAULT ACTION
+    // 8. DEFAULT ACTION
     // --------------------------------
 
     if (level === "CRITICAL") {

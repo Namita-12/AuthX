@@ -114,3 +114,27 @@ console.log("\n💥 BRUTE FORCE + SUCCESS");
 console.log(
     calculateRiskCorrelation(bruteForceLogin)
 );
+// TEST 5 — EXPOSED CREDENTIAL + ANOMALOUS SUCCESS
+const exposedCredentialLogin = {
+    behaviorScore: 85,
+    behaviorStatus: "ANOMALOUS",
+    behaviorConfidence: "MEDIUM",
+    behaviorSignals: [
+        "New device detected",
+        "New location detected",
+        "New browser detected",
+        "Unusual login time"
+    ],
+    eventType: "LOGIN_SUCCESS",
+    recentFailedAttempts: 0,
+
+    credentialRiskScore: 40,
+    credentialRiskLevel: "HIGH",
+    credentialRiskReason:
+        "Credential appears in known exposure data"
+};
+
+console.log("\n🔐 EXPOSED CREDENTIAL + ANOMALOUS LOGIN");
+console.log(
+    calculateRiskCorrelation(exposedCredentialLogin)
+);
