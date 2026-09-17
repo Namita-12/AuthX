@@ -8,9 +8,11 @@ const calculateCircularHourDistance = (hour1, hour2) => {
 };
 
 const analyzeBehavior = (event, baseline) => {
-    const signals = [];
-    let score = 0;
+   const signals = [];
+let score = 0;
 
+let isNewDevice = false;
+let isNewLocation = false;
     // 1. BASELINE CONFIDENCE
 
     let confidence;
@@ -28,13 +30,16 @@ const analyzeBehavior = (event, baseline) => {
     const knownDevice =
         baseline.devices.includes(event.device);
 
-    if (
-        !knownDevice &&
-        baseline.totalSuccessfulLogins > 0
-    ) {
-        score += 25;
-        signals.push("New device detected");
-    }
+  if (
+    !knownDevice &&
+    baseline.totalSuccessfulLogins > 0
+) {
+    score += 25;
+
+    isNewDevice = true;
+
+    signals.push("New device detected");
+}
 
     // 3. LOCATION ANALYSIS
 
@@ -43,15 +48,17 @@ const analyzeBehavior = (event, baseline) => {
     const knownLocation =
         currentCity &&
         baseline.cities.includes(currentCity);
+if (
+    currentCity &&
+    !knownLocation &&
+    baseline.totalSuccessfulLogins > 0
+) {
+    score += 25;
 
-    if (
-        currentCity &&
-        !knownLocation &&
-        baseline.totalSuccessfulLogins > 0
-    ) {
-        score += 25;
-        signals.push("New location detected");
-    }
+    isNewLocation = true;
+
+    signals.push("New location detected");
+}
 
     // 4. BROWSER ANALYSIS
 
@@ -139,11 +146,14 @@ const analyzeBehavior = (event, baseline) => {
     }
 
     return {
-        score,
-        status,
-        confidence,
-        signals
-    };
+    score,
+    status,
+    confidence,
+    signals,
+
+    isNewDevice,
+    isNewLocation
+};
 };
 
 module.exports = {

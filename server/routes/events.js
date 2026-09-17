@@ -10,6 +10,9 @@ const { analyzeBehavior } = require("../services/behaviorAnalyzer");
 const {
     calculateRiskCorrelation
 } = require("../risk-engine/riskCorrelationEngine");
+const {
+    detectAccountTakeoverPattern
+} = require("../risk-engine/accountTakeoverDetector");
 
 const router = express.Router();
 
@@ -168,6 +171,26 @@ router.post(
                 credentialRiskReason:
                     credentialRisk.reason
             };
+            const accountTakeover =
+    detectAccountTakeoverPattern({
+        eventType,
+
+        recentFailedAttempts,
+
+        behaviorScore:
+            behavior.score,
+
+        isNewDevice:
+            behavior.isNewDevice,
+
+        isNewLocation:
+            behavior.isNewLocation
+    });
+
+console.log(
+    "ACCOUNT TAKEOVER RESULT:",
+    accountTakeover
+);
 
             console.log(
                 "SECURITY SIGNALS:",
@@ -221,6 +244,19 @@ router.post(
 
                 message:
                     "Authentication event recorded and analyzed",
+                    accountTakeover: {
+    detected:
+        accountTakeover.detected,
+
+    score:
+        accountTakeover.score,
+
+    level:
+        accountTakeover.level,
+
+    indicators:
+        accountTakeover.indicators
+},
 
                 behavior: {
                     score:

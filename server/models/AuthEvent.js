@@ -63,10 +63,10 @@ timezone: {
         },
 
         riskLevel: {
-            type: String,
-            enum: ["LOW", "MEDIUM", "HIGH"],
-            default: "LOW"
-        },
+    type: String,
+    enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+    default: "LOW"
+},
 
         riskReasons: {
             type: [String],

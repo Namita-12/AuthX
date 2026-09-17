@@ -10,10 +10,15 @@ const calculateRiskCorrelation = ({
     credentialRiskReason
 }) => {
 
-    let score = 0;
-    const evidence = [];
-    const actions = [];
+   let score = 0;
+const evidence = [];
+const actions = [];
 
+const riskFactors = {
+    behavioralAnomaly: behaviorScore ?? 0,
+    credentialExposure: credentialRiskScore ?? 0,
+    recentFailedAttempts: recentFailedAttempts ?? 0
+};
     // --------------------------------
     // 1. BEHAVIORAL ANOMALY
     // --------------------------------
@@ -161,13 +166,16 @@ const calculateRiskCorrelation = ({
     // Remove duplicate actions
     const uniqueActions = [...new Set(actions)];
 
-    return {
-        score,
-        level,
-        confidence: behaviorConfidence,
-        evidence,
-        recommendedActions: uniqueActions
-    };
+   return {
+    score,
+    level,
+    confidence: behaviorConfidence,
+
+    riskFactors,
+
+    evidence,
+    recommendedActions: uniqueActions
+};
 };
 
 module.exports = {
