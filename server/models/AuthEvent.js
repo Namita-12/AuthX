@@ -11,10 +11,12 @@ const authEventSchema = new mongoose.Schema(
         eventType: {
             type: String,
             enum: [
-                "LOGIN_SUCCESS",
-                "LOGIN_FAILED",
-                "LOGOUT"
-            ],
+    "LOGIN_SUCCESS",
+    "LOGIN_FAILED",
+    "LOGIN_CHALLENGE_REQUIRED",
+    "LOGIN_BLOCKED",
+    "LOGOUT"
+],
             required: true
         },
 

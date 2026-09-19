@@ -6,33 +6,34 @@ console.log(
     "\n=== AUTHENTICATION RISK INTEGRATION TEST ==="
 );
 
-const exposedAnomalousLogin = {
-    behaviorScore: 85,
-    behaviorStatus: "ANOMALOUS",
-    behaviorConfidence: "MEDIUM",
-
-    behaviorSignals: [
-        "New device detected",
-        "New location detected",
-        "New browser detected",
-        "Unusual login time"
-    ],
-
-    eventType: "LOGIN_SUCCESS",
-
-    recentFailedAttempts: 0,
-
-    credentialRiskScore: 40,
-    credentialRiskLevel: "HIGH",
-
-    credentialRiskReason:
-        "Credential appears in known exposure data"
-};
-
 const result =
-    evaluateAuthenticationRisk(
-        exposedAnomalousLogin
-    );
+    evaluateAuthenticationRisk({
+
+        eventType: "LOGIN_SUCCESS",
+
+        behavior: {
+            score: 85,
+            status: "ANOMALOUS",
+            confidence: "MEDIUM",
+            signals: [
+                "New device detected",
+                "New location detected"
+            ],
+            isNewDevice: true,
+            isNewLocation: true
+        },
+
+        recentFailedAttempts: 5,
+
+        credentialRisk: {
+            exposed: true,
+            score: 40,
+            level: "HIGH",
+            reason:
+                "Credential appears in known exposure data"
+        }
+
+    });
 
 console.log(
     JSON.stringify(

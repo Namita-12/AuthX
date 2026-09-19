@@ -10,22 +10,18 @@ const calculateRiskCorrelation = ({
     credentialRiskReason
 }) => {
 
-   let score = 0;
-const evidence = [];
-const actions = [];
+    let score = 0;
+    const evidence = [];
+    const actions = [];
 
-const riskFactors = {
-    behavioralAnomaly: behaviorScore ?? 0,
-    credentialExposure: credentialRiskScore ?? 0,
-    recentFailedAttempts: recentFailedAttempts ?? 0
-};
-    // --------------------------------
-    // 1. BEHAVIORAL ANOMALY
-    // --------------------------------
+    const riskFactors = {
+        behavioralAnomaly: behaviorScore ?? 0,
+        credentialExposure: credentialRiskScore ?? 0,
+        recentFailedAttempts: recentFailedAttempts ?? 0
+    };
 
     if (behaviorStatus === "SUSPICIOUS") {
         score += 25;
-
         evidence.push(
             "Authentication behavior differs from the user's normal pattern"
         );
@@ -33,19 +29,13 @@ const riskFactors = {
 
     if (behaviorStatus === "ANOMALOUS") {
         score += 40;
-
         evidence.push(
             "Authentication behavior is highly unusual for this user"
         );
     }
 
-    // --------------------------------
-    // 2. FAILED LOGIN PATTERN
-    // --------------------------------
-
     if (recentFailedAttempts >= 3) {
         score += 20;
-
         evidence.push(
             `${recentFailedAttempts} failed login attempts detected recently`
         );
@@ -53,34 +43,23 @@ const riskFactors = {
 
     if (recentFailedAttempts >= 5) {
         score += 15;
-
         evidence.push(
             "Repeated authentication failures may indicate credential attack activity"
         );
     }
-
-    // --------------------------------
-    // 3. SUCCESS AFTER FAILED ATTEMPTS
-    // --------------------------------
 
     if (
         eventType === "LOGIN_SUCCESS" &&
         recentFailedAttempts >= 3
     ) {
         score += 20;
-
         evidence.push(
             "Successful authentication occurred after multiple failed attempts"
         );
-
         actions.push(
             "Require additional authentication"
         );
     }
-
-    // --------------------------------
-    // 4. HIGH BEHAVIORAL ANOMALY
-    // --------------------------------
 
     if (
         behaviorScore >= 70 &&
@@ -89,22 +68,15 @@ const riskFactors = {
         evidence.push(
             "Successful login occurred despite highly anomalous behavior"
         );
-
         actions.push(
             "Require additional authentication"
         );
     }
 
-    // --------------------------------
-    // 5. CREDENTIAL RISK
-    // --------------------------------
-
     if (
         credentialRiskLevel === "HIGH" &&
         credentialRiskScore > 0
     ) {
-        // Credential risk is weighted instead of
-        // directly adding the entire component score.
         const credentialContribution = Math.round(
             credentialRiskScore * 0.75
         );
@@ -123,15 +95,7 @@ const riskFactors = {
         }
     }
 
-    // --------------------------------
-    // 6. LIMIT SCORE
-    // --------------------------------
-
     score = Math.min(score, 100);
-
-    // --------------------------------
-    // 7. FINAL RISK LEVEL
-    // --------------------------------
 
     let level;
 
@@ -144,10 +108,6 @@ const riskFactors = {
     } else {
         level = "LOW";
     }
-
-    // --------------------------------
-    // 8. DEFAULT ACTION
-    // --------------------------------
 
     if (level === "CRITICAL") {
         actions.push(
@@ -163,21 +123,19 @@ const riskFactors = {
         );
     }
 
-    // Remove duplicate actions
     const uniqueActions = [...new Set(actions)];
 
-   return {
-    score,
-    level,
-    confidence: behaviorConfidence,
-
-    riskFactors,
-
-    evidence,
-    recommendedActions: uniqueActions
-};
+    return {
+        score,
+        level,
+        confidence: behaviorConfidence,
+        riskFactors,
+        evidence,
+        recommendedActions: uniqueActions
+    };
 };
 
 module.exports = {
     calculateRiskCorrelation
 };
+

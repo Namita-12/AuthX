@@ -6,23 +6,83 @@ const {
     decideAuthenticationAction
 } = require("../risk-engine/authenticationDecisionEngine");
 
-const evaluateAuthenticationRisk = (securitySignals) => {
+const {
+    detectAccountTakeoverPattern
+} = require("../risk-engine/accountTakeoverDetector");
 
-    // 1. Calculate overall risk
-    const risk =
-        calculateRiskCorrelation(
-            securitySignals
-        );
+const evaluateAuthenticationRisk = ({
+    eventType,
+    behavior,
+    recentFailedAttempts,
+    credentialRisk
+}) => {
 
-    // 2. Convert risk into an authentication decision
+    // --------------------------------
+    // 1. Risk correlation
+    // --------------------------------
+
+    const risk = calculateRiskCorrelation({
+        behaviorScore: behavior.score,
+        behaviorStatus: behavior.status,
+        behaviorConfidence: behavior.confidence,
+        behaviorSignals: behavior.signals,
+
+        eventType,
+
+        recentFailedAttempts,
+
+        credentialRiskScore:
+            credentialRisk?.score ?? 0,
+
+        credentialRiskLevel:
+            credentialRisk?.level ?? "LOW",
+
+        credentialRiskReason:
+            credentialRisk?.reason ??
+            "No credential exposure detected"
+    });
+
+    // --------------------------------
+    // 2. Authentication decision
+    // --------------------------------
+
     const decision =
         decideAuthenticationAction(
             risk.level
         );
 
+    // --------------------------------
+    // 3. Account takeover detection
+    // --------------------------------
+
+    const accountTakeover =
+        detectAccountTakeoverPattern({
+
+            eventType,
+
+            recentFailedAttempts,
+
+            behaviorScore:
+                behavior.score,
+
+            isNewDevice:
+                behavior.isNewDevice,
+
+            isNewLocation:
+                behavior.isNewLocation,
+
+            credentialRiskScore:
+                credentialRisk?.score ?? 0,
+
+            credentialRiskLevel:
+                credentialRisk?.level ?? "LOW"
+
+        });
+
     return {
         risk,
-        decision
+        decision,
+        accountTakeover
     };
 };
 

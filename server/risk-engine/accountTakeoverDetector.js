@@ -3,42 +3,30 @@ const detectAccountTakeoverPattern = ({
     recentFailedAttempts,
     behaviorScore,
     isNewDevice,
-    isNewLocation
+    isNewLocation,
+    credentialRiskScore,
+    credentialRiskLevel
 }) => {
 
     const indicators = [];
     let score = 0;
 
-    // --------------------------------
-    // 1. Credential attack activity
-    // --------------------------------
-
     if (recentFailedAttempts >= 3) {
         score += 25;
-
         indicators.push(
             "Multiple failed authentication attempts detected"
         );
     }
-
-    // --------------------------------
-    // 2. Successful login after failures
-    // --------------------------------
 
     if (
         eventType === "LOGIN_SUCCESS" &&
         recentFailedAttempts >= 3
     ) {
         score += 30;
-
         indicators.push(
             "Successful login occurred after multiple failed attempts"
         );
     }
-
-    // --------------------------------
-    // 3. New device after failures
-    // --------------------------------
 
     if (
         eventType === "LOGIN_SUCCESS" &&
@@ -46,15 +34,10 @@ const detectAccountTakeoverPattern = ({
         isNewDevice === true
     ) {
         score += 20;
-
         indicators.push(
             "Successful login after failures came from a new device"
         );
     }
-
-    // --------------------------------
-    // 4. New location after failures
-    // --------------------------------
 
     if (
         eventType === "LOGIN_SUCCESS" &&
@@ -62,30 +45,20 @@ const detectAccountTakeoverPattern = ({
         isNewLocation === true
     ) {
         score += 20;
-
         indicators.push(
             "Successful login after failures came from a new location"
         );
     }
-
-    // --------------------------------
-    // 5. Highly anomalous successful login
-    // --------------------------------
 
     if (
         eventType === "LOGIN_SUCCESS" &&
         behaviorScore >= 70
     ) {
         score += 25;
-
         indicators.push(
             "Successful login occurred with highly anomalous behavior"
         );
     }
-
-    // --------------------------------
-    // 6. New device + location
-    // --------------------------------
 
     if (
         eventType === "LOGIN_SUCCESS" &&
@@ -93,17 +66,33 @@ const detectAccountTakeoverPattern = ({
         isNewLocation === true
     ) {
         score += 20;
-
         indicators.push(
             "Successful login came from both a new device and new location"
         );
     }
 
-    score = Math.min(score, 100);
+    if (
+        credentialRiskLevel === "HIGH" &&
+        credentialRiskScore > 0
+    ) {
+        indicators.push(
+            "Credential appears in known exposure data"
+        );
+    }
 
-    // --------------------------------
-    // Determine detection type
-    // --------------------------------
+    if (
+        credentialRiskLevel === "HIGH" &&
+        credentialRiskScore > 0 &&
+        eventType === "LOGIN_SUCCESS" &&
+        recentFailedAttempts >= 3
+    ) {
+        score += 25;
+        indicators.push(
+            "Successful login used a credential with known exposure risk after multiple failed attempts"
+        );
+    }
+
+    score = Math.min(score, 100);
 
     let detectionType;
 
@@ -125,10 +114,6 @@ const detectAccountTakeoverPattern = ({
     } else {
         detectionType = "NORMAL";
     }
-
-    // --------------------------------
-    // Determine severity
-    // --------------------------------
 
     let level;
 
@@ -152,3 +137,4 @@ const detectAccountTakeoverPattern = ({
 module.exports = {
     detectAccountTakeoverPattern
 };
+
