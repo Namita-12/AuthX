@@ -18,6 +18,9 @@ const {
 const {
     evaluateAuthenticationRisk
 } = require("../services/authenticationRiskService");
+const {
+    updateUserTrust
+} = require("../services/userTrustService");
 
 const router = express.Router();
 
@@ -221,6 +224,31 @@ router.post("/login", async (req, res) => {
                 credentialRisk
 
             });
+            const trust =
+    await updateUserTrust({
+        userId,
+
+        eventType: "LOGIN_SUCCESS",
+
+        behaviorScore:
+            behavior.score,
+
+        isNewDevice:
+            behavior.isNewDevice,
+
+        isNewLocation:
+            behavior.isNewLocation,
+
+        recentFailedAttempts,
+
+        credentialRiskLevel:
+            credentialRisk?.level ?? "LOW",
+
+        accountTakeoverDetected:
+            securityEvaluation
+                .accountTakeover
+                .detected
+    });
 
         // --------------------------------------------------
         // 10. BLOCK decision
@@ -273,6 +301,10 @@ router.post("/login", async (req, res) => {
             return res.status(403).json({
 
                 success: false,
+                trust: {
+    score: trust.trustScore,
+    level: trust.trustLevel
+},
 
                 message:
                     "Authentication blocked due to security risk",
@@ -371,7 +403,11 @@ router.post("/login", async (req, res) => {
                         .decision,
 
                 eventId:
-                    challengeEvent._id
+                    challengeEvent._id,
+                    trust: {
+    score: trust.trustScore,
+    level: trust.trustLevel
+}
 
             });
         }
@@ -468,7 +504,11 @@ router.post("/login", async (req, res) => {
                     .decision,
 
             eventId:
-                successfulEvent._id
+                successfulEvent._id,
+                trust: {
+    score: trust.trustScore,
+    level: trust.trustLevel
+}
 
         });
 

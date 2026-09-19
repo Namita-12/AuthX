@@ -9,6 +9,9 @@ const {
 const {
     detectAccountTakeoverPattern
 } = require("../risk-engine/accountTakeoverDetector");
+const {
+    calculateTrustScore
+} = require("../risk-engine/trustScoreEngine");
 
 const evaluateAuthenticationRisk = ({
     eventType,
@@ -78,12 +81,41 @@ const evaluateAuthenticationRisk = ({
                 credentialRisk?.level ?? "LOW"
 
         });
+            // --------------------------------
+    // 4. Adaptive trust score
+    // --------------------------------
+
+    const trust = calculateTrustScore({
+
+        previousTrust: 70,
+
+        eventType,
+
+        behaviorScore:
+            behavior.score,
+
+        isNewDevice:
+            behavior.isNewDevice,
+
+        isNewLocation:
+            behavior.isNewLocation,
+
+        recentFailedAttempts,
+
+        credentialRiskLevel:
+            credentialRisk?.level ?? "LOW",
+
+        accountTakeoverDetected:
+            accountTakeover.detected
+
+    });
 
     return {
-        risk,
-        decision,
-        accountTakeover
-    };
+    risk,
+    decision,
+    accountTakeover,
+    trust
+};
 };
 
 module.exports = {
