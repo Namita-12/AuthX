@@ -22,6 +22,9 @@ const {
     updateUserTrust
 } = require("../services/userTrustService");
 const {
+    buildAuthenticationResponse
+} = require("../services/authenticationResponseService");
+const {
     createSession,
 
     revokeSession
@@ -348,37 +351,28 @@ router.post("/login", async (req, res) => {
 
                 });
 
-            return res.status(403).json({
+            const response =
+    buildAuthenticationResponse({
+        decision:
+            securityEvaluation.decision,
 
-                success: false,
-                trust: {
-    score: trust.trustScore,
-    level: trust.trustLevel
-},
+        risk:
+            securityEvaluation.risk,
 
-                message:
-                    "Authentication blocked due to security risk",
+        accountTakeover:
+            securityEvaluation.accountTakeover,
 
-                accountTakeover:
-                    securityEvaluation
-                        .accountTakeover,
+        behavior,
 
-                behavior,
+        credentialRisk,
 
-                credentialRisk,
+        trust
+    });
 
-                risk:
-                    securityEvaluation
-                        .risk,
-
-                decision:
-                    securityEvaluation
-                        .decision,
-
-                eventId:
-                    blockedEvent._id
-
-            });
+return res.status(403).json({
+    ...response,
+    eventId: blockedEvent._id
+});
         }
 
         // --------------------------------------------------
@@ -429,37 +423,28 @@ router.post("/login", async (req, res) => {
 
                 });
 
-            return res.status(202).json({
+            const response =
+    buildAuthenticationResponse({
+        decision:
+            securityEvaluation.decision,
 
-                success: false,
+        risk:
+            securityEvaluation.risk,
 
-                message:
-                    "Additional authentication required",
+        accountTakeover:
+            securityEvaluation.accountTakeover,
 
-                accountTakeover:
-                    securityEvaluation
-                        .accountTakeover,
+        behavior,
 
-                behavior,
+        credentialRisk,
 
-                credentialRisk,
+        trust
+    });
 
-                risk:
-                    securityEvaluation
-                        .risk,
-
-                decision:
-                    securityEvaluation
-                        .decision,
-
-                eventId:
-                    challengeEvent._id,
-                    trust: {
-    score: trust.trustScore,
-    level: trust.trustLevel
-}
-
-            });
+return res.status(202).json({
+    ...response,
+    eventId: challengeEvent._id
+});
         }
 
         // --------------------------------------------------
@@ -538,40 +523,29 @@ const session = await createSession({
         // 14. Return successful authentication
         // --------------------------------------------------
 
-        return res.json({
+      const response =
+    buildAuthenticationResponse({
+        decision:
+            securityEvaluation.decision,
 
-            success: true,
+        risk:
+            securityEvaluation.risk,
 
-            message:
-                "Authentication successful",
+        accountTakeover:
+            securityEvaluation.accountTakeover,
 
-            accessToken:
-                token,
+        behavior,
 
-            accountTakeover:
-                securityEvaluation
-                    .accountTakeover,
+        credentialRisk,
 
-            behavior,
+        trust
+    });
 
-            credentialRisk,
-
-            risk:
-                securityEvaluation
-                    .risk,
-
-            decision:
-                securityEvaluation
-                    .decision,
-
-            eventId:
-                successfulEvent._id,
-                trust: {
-    score: trust.trustScore,
-    level: trust.trustLevel
-}
-
-        });
+return res.json({
+    ...response,
+    accessToken: token,
+    eventId: successfulEvent._id
+});
 
     } catch (error) {
 
