@@ -21,9 +21,58 @@ const {
 const {
     updateUserTrust
 } = require("../services/userTrustService");
+const {
+    createSession,
+
+    revokeSession
+
+} = require("../services/sessionService");
 
 const router = express.Router();
+const authenticateToken =
+    require("../middleware/authMiddleware");
 
+
+router.post(
+    "/logout",
+    authenticateToken,
+    async (req, res) => {
+
+        try {
+
+            const sessionId =
+                req.user.sessionId;
+
+            const revokedSession =
+                await revokeSession(sessionId);
+
+            if (!revokedSession) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Session not found or already revoked"
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: "Session revoked successfully",
+                sessionId
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+            return res.status(500).json({
+                success: false,
+                message: "Session revocation failed"
+            });
+        }
+    }
+);
 router.post("/login", async (req, res) => {
 
     try {
@@ -224,6 +273,7 @@ router.post("/login", async (req, res) => {
                 credentialRisk
 
             });
+            
             const trust =
     await updateUserTrust({
         userId,
@@ -453,6 +503,16 @@ router.post("/login", async (req, res) => {
                         .evidence
 
             });
+            const expiresAt = new Date(
+    Date.now() + 60 * 60 * 1000
+);
+
+const session = await createSession({
+    userId,
+    device,
+    ipAddress,
+    expiresAt
+});
 
         // --------------------------------------------------
         // 13. Generate JWT
@@ -462,7 +522,8 @@ router.post("/login", async (req, res) => {
             jwt.sign(
 
                 {
-                    userId
+                    userId,
+    sessionId: session.sessionId
                 },
 
                 process.env.JWT_SECRET,
