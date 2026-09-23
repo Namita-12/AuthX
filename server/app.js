@@ -3,10 +3,13 @@ const cors = require("cors");
 const eventsRouter = require("./routes/events");
 const app = express();
 const authRouter = require("./routes/auth");
+const incidentsRouter =
+    require("./routes/incidents");
 app.use(cors());
 app.use(express.json());
 app.use("/api/events", eventsRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/incidents", incidentsRouter);
 app.get("/", (req, res) => {
     res.json({
         name: "AuthX",

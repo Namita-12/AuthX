@@ -30,6 +30,9 @@ const {
     revokeSession
 
 } = require("../services/sessionService");
+const {
+    createSecurityIncident
+} = require("../services/securityIncidentService");
 
 const router = express.Router();
 const authenticateToken =
@@ -350,6 +353,19 @@ router.post("/login", async (req, res) => {
                             .evidence
 
                 });
+                const incident =
+    await createSecurityIncident({
+        userId,
+
+        accountTakeover:
+            securityEvaluation.accountTakeover,
+
+        risk:
+            securityEvaluation.risk,
+
+        eventId:
+            blockedEvent._id
+    });
 
             const response =
     buildAuthenticationResponse({
@@ -371,7 +387,12 @@ router.post("/login", async (req, res) => {
 
 return res.status(403).json({
     ...response,
-    eventId: blockedEvent._id
+
+    eventId:
+        blockedEvent._id,
+
+    incidentId:
+        incident?._id ?? null
 });
         }
 
