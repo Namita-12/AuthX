@@ -7,7 +7,9 @@ const authenticateToken =
     require("../middleware/authMiddleware");
 
 const router = express.Router();
-
+const {
+    updateIncidentStatus
+} = require("../services/incidentStatusService");
 router.get(
     "/",
     authenticateToken,
@@ -79,6 +81,65 @@ router.get(
                 success: false,
                 message:
                     "Failed to retrieve security incident"
+            });
+        }
+    }
+);
+router.patch(
+    "/:id/status",
+    authenticateToken,
+    async (req, res) => {
+        try {
+            const {
+                status
+            } = req.body;
+
+            const result =
+                await updateIncidentStatus({
+                    incidentId:
+                        req.params.id,
+
+                    userId:
+                        req.user.userId,
+
+                    status
+                });
+
+            if (result.error === "INVALID_STATUS") {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Invalid incident status"
+                });
+            }
+
+            if (result.error === "NOT_FOUND") {
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Security incident not found"
+                });
+            }
+
+            return res.json({
+                success: true,
+                message:
+                    "Security incident status updated",
+                incident:
+                    result.incident
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Incident status update error:",
+                error
+            );
+
+            return res.status(500).json({
+                success: false,
+                message:
+                    "Failed to update incident status"
             });
         }
     }
