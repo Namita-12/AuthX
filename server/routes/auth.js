@@ -37,7 +37,9 @@ const {
 const router = express.Router();
 const authenticateToken =
     require("../middleware/authMiddleware");
-
+const {
+    executeSecurityResponse
+} = require("../services/responseOrchestrator");
 
 router.post(
     "/logout",
@@ -366,6 +368,19 @@ router.post("/login", async (req, res) => {
         eventId:
             blockedEvent._id
     });
+    const responseExecution =
+    await executeSecurityResponse({
+        userId,
+
+        riskLevel:
+            securityEvaluation.risk.level,
+
+        accountTakeoverDetected:
+            securityEvaluation.accountTakeover.detected,
+
+        credentialRiskLevel:
+            credentialRisk?.level ?? "LOW"
+    });
 
             const response =
     buildAuthenticationResponse({
@@ -374,6 +389,7 @@ router.post("/login", async (req, res) => {
 
         risk:
             securityEvaluation.risk,
+            
 
         accountTakeover:
             securityEvaluation.accountTakeover,
@@ -392,9 +408,11 @@ return res.status(403).json({
         blockedEvent._id,
 
     incidentId:
-        incident?._id ?? null
-});
-        }
+        incident?._id ?? null,
+
+    response:
+        responseExecution
+});    }
 
         // --------------------------------------------------
         // 11. Additional authentication required

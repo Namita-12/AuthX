@@ -51,9 +51,29 @@ const revokeSession = async (sessionId) => {
 
     return session;
 };
+const revokeAllUserSessions = async (userId) => {
+
+    const result =
+        await Session.updateMany(
+            {
+                userId,
+                revoked: false
+            },
+            {
+                revoked: true,
+                revokedAt: new Date()
+            }
+        );
+
+    return {
+        revokedCount: result.modifiedCount
+    };
+};
 
 module.exports = {
     createSession,
     getSession,
-    revokeSession
+    revokeSession,
+
+    revokeAllUserSessions
 };
