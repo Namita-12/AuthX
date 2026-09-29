@@ -1,6 +1,9 @@
+const { revokeAllUserSessions } =
+    require("./sessionService");
+
 const {
-    revokeAllUserSessions
-} = require("./sessionService");
+    recordResponseAction
+} = require("./responseAuditService");
 
 const executeResponseAction = async ({
     action,
@@ -14,7 +17,7 @@ const executeResponseAction = async ({
             const result =
                 await revokeAllUserSessions(userId);
 
-            return {
+            const response = {
                 action,
                 status: "EXECUTED",
                 success: true,
@@ -23,11 +26,21 @@ const executeResponseAction = async ({
                         result.revokedCount
                 }
             };
+
+            await recordResponseAction({
+                userId,
+                action: response.action,
+                status: response.status,
+                success: response.success,
+                details: response.details
+            });
+
+            return response;
         }
 
-        case "REQUIRE_CREDENTIAL_RESET":
+        case "REQUIRE_CREDENTIAL_RESET": {
 
-            return {
+            const response = {
                 action,
                 status: "RECOMMENDED",
                 success: false,
@@ -37,9 +50,20 @@ const executeResponseAction = async ({
                 }
             };
 
-        case "REQUIRE_ADDITIONAL_AUTHENTICATION":
+            await recordResponseAction({
+                userId,
+                action: response.action,
+                status: response.status,
+                success: response.success,
+                details: response.details
+            });
 
-            return {
+            return response;
+        }
+
+        case "REQUIRE_ADDITIONAL_AUTHENTICATION": {
+
+            const response = {
                 action,
                 status: "RECOMMENDED",
                 success: false,
@@ -49,9 +73,20 @@ const executeResponseAction = async ({
                 }
             };
 
-        case "BLOCK_ACCOUNT_ACCESS":
+            await recordResponseAction({
+                userId,
+                action: response.action,
+                status: response.status,
+                success: response.success,
+                details: response.details
+            });
 
-            return {
+            return response;
+        }
+
+        case "BLOCK_ACCOUNT_ACCESS": {
+
+            const response = {
                 action,
                 status: "RECOMMENDED",
                 success: false,
@@ -61,7 +96,18 @@ const executeResponseAction = async ({
                 }
             };
 
-        default:
+            await recordResponseAction({
+                userId,
+                action: response.action,
+                status: response.status,
+                success: response.success,
+                details: response.details
+            });
+
+            return response;
+        }
+
+        default: {
 
             return {
                 action,
@@ -72,6 +118,7 @@ const executeResponseAction = async ({
                         "Unknown response action"
                 }
             };
+        }
     }
 };
 
