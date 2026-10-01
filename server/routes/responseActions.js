@@ -16,10 +16,11 @@ router.get(
 
         try {
 
-            const actions =
-                await getUserResponseActions(
-                    req.user.userId
-                );
+           const actions =
+    await getUserResponseActions(
+        req.user.userId,
+        req.query.status
+    );
 
             return res.status(200).json({
                 success: true,

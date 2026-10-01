@@ -1,9 +1,16 @@
 const ResponseAction = require("../models/ResponseAction");
 
-const getUserResponseActions = async (userId) => {
-    return await ResponseAction.find({
+const getUserResponseActions = async (userId, status) => {
+
+    const query = {
         userId
-    }).sort({
+    };
+
+    if (status) {
+        query.status = status;
+    }
+
+    return await ResponseAction.find(query).sort({
         createdAt: -1
     });
 };
