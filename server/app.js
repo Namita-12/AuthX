@@ -5,6 +5,12 @@ const app = express();
 const authRouter = require("./routes/auth");
 const incidentsRouter =
     require("./routes/incidents");
+    const responseActionsRouter =
+    require("./routes/responseActions");
+    app.use(
+    "/api/response-actions",
+    responseActionsRouter
+);
 app.use(cors());
 app.use(express.json());
 app.use("/api/events", eventsRouter);
