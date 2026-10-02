@@ -1,7 +1,12 @@
 const ResponseAction = require("../models/ResponseAction");
 
-const getUserResponseActions = async (userId, status) => {
-
+const getUserResponseActions = async (
+    userId,
+    status,
+    action,
+    page = 1,
+    limit = 10
+) => {
     const query = {
         userId
     };
@@ -10,9 +15,27 @@ const getUserResponseActions = async (userId, status) => {
         query.status = status;
     }
 
-    return await ResponseAction.find(query).sort({
-        createdAt: -1
-    });
+    if (action) {
+        query.action = action;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [actions, total] = await Promise.all([
+        ResponseAction.find(query)
+            .sort({
+                createdAt: -1
+            })
+            .skip(skip)
+            .limit(limit),
+
+        ResponseAction.countDocuments(query)
+    ]);
+
+    return {
+        actions,
+        total
+    };
 };
 
 module.exports = {
