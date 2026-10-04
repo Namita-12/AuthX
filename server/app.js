@@ -6,12 +6,17 @@ const authRouter = require("./routes/auth");
 const incidentsRouter = require("./routes/incidents");
 const responseActionsRouter =
     require("./routes/responseActions");
+    const dashboardRouter =
+    require("./routes/dashboard");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use(
+    "/api/dashboard",
+    dashboardRouter
+);
 app.use("/api/events", eventsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/incidents", incidentsRouter);
