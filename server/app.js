@@ -8,6 +8,8 @@ const responseActionsRouter =
     require("./routes/responseActions");
     const dashboardRouter =
     require("./routes/dashboard");
+    const securityTimelineRouter =
+    require("./routes/securityTimeline");
 
 const app = express();
 
@@ -28,7 +30,10 @@ const evidenceRouter =
     require("./routes/evidence");
 
 app.use("/api/evidence", evidenceRouter);
-
+app.use(
+    "/api/security-timeline",
+    securityTimelineRouter
+);
 app.get("/", (req, res) => {
     res.json({
         name: "AuthX",
