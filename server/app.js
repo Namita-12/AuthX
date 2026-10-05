@@ -24,6 +24,10 @@ app.use(
     "/api/response-actions",
     responseActionsRouter
 );
+const evidenceRouter =
+    require("./routes/evidence");
+
+app.use("/api/evidence", evidenceRouter);
 
 app.get("/", (req, res) => {
     res.json({
