@@ -8,7 +8,16 @@ const getUserDashboard = async (userId) => {
         trust,
         recentEvents,
         openIncidents,
-        recentResponseActions
+        recentResponseActions,
+        successfulLogins,
+        failedLogins,
+        challenges,
+        blockedLogins,
+        lowRiskEvents,
+        mediumRiskEvents,
+        highRiskEvents,
+        criticalRiskEvents,
+        executedResponses
     ] = await Promise.all([
         UserTrust.findOne({ userId }),
 
@@ -19,23 +28,59 @@ const getUserDashboard = async (userId) => {
         SecurityIncident.find({
             userId,
             status: {
-                $in: [
-                    "OPEN",
-                    "INVESTIGATING"
-                ]
+                $in: ["OPEN", "INVESTIGATING"]
             }
-        })
-            .sort({ detectedAt: -1 }),
+        }).sort({ detectedAt: -1 }),
 
         ResponseAction.find({ userId })
             .sort({ createdAt: -1 })
-            .limit(10)
-    ]);
+            .limit(10),
 
-    const failedLogins = await AuthEvent.countDocuments({
-        userId,
-        eventType: "LOGIN_FAILED"
-    });
+        AuthEvent.countDocuments({
+            userId,
+            eventType: "LOGIN_SUCCESS"
+        }),
+
+        AuthEvent.countDocuments({
+            userId,
+            eventType: "LOGIN_FAILED"
+        }),
+
+        AuthEvent.countDocuments({
+            userId,
+            eventType: "LOGIN_CHALLENGE_REQUIRED"
+        }),
+
+        AuthEvent.countDocuments({
+            userId,
+            eventType: "LOGIN_BLOCKED"
+        }),
+
+        AuthEvent.countDocuments({
+            userId,
+            riskLevel: "LOW"
+        }),
+
+        AuthEvent.countDocuments({
+            userId,
+            riskLevel: "MEDIUM"
+        }),
+
+        AuthEvent.countDocuments({
+            userId,
+            riskLevel: "HIGH"
+        }),
+
+        AuthEvent.countDocuments({
+            userId,
+            riskLevel: "CRITICAL"
+        }),
+
+        ResponseAction.countDocuments({
+            userId,
+            status: "EXECUTED"
+        })
+    ]);
 
     return {
         trust: trust || {
@@ -45,11 +90,27 @@ const getUserDashboard = async (userId) => {
         },
 
         statistics: {
-            failedLogins,
-            openIncidents: openIncidents.length,
-            recentEvents: recentEvents.length,
-            recentResponseActions:
-                recentResponseActions.length
+            authentication: {
+                successfulLogins,
+                failedLogins,
+                challenges,
+                blockedLogins
+            },
+
+            risk: {
+                low: lowRiskEvents,
+                medium: mediumRiskEvents,
+                high: highRiskEvents,
+                critical: criticalRiskEvents
+            },
+
+            security: {
+                openIncidents: openIncidents.length,
+                recentEvents: recentEvents.length,
+                recentResponseActions:
+                    recentResponseActions.length,
+                executedResponses
+            }
         },
 
         recentEvents,
