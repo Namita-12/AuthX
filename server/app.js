@@ -10,7 +10,8 @@ const responseActionsRouter =
     require("./routes/dashboard");
     const securityTimelineRouter =
     require("./routes/securityTimeline");
-
+const credentialExposureRouter =
+    require("./routes/credentialExposure");
 const app = express();
 
 app.use(cors());
@@ -33,6 +34,10 @@ app.use("/api/evidence", evidenceRouter);
 app.use(
     "/api/security-timeline",
     securityTimelineRouter
+);
+app.use(
+    "/api/credential-exposure",
+    credentialExposureRouter
 );
 app.get("/", (req, res) => {
     res.json({
