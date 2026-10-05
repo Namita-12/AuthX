@@ -14,6 +14,8 @@ const credentialExposureRouter =
     require("./routes/credentialExposure");
     const networkIntelligenceRouter =
     require("./routes/networkIntelligence");
+    const securityAnalyticsRouter =
+    require("./routes/securityAnalytics");
 const app = express();
 
 app.use(cors());
@@ -40,6 +42,10 @@ app.use(
 app.use(
     "/api/security-timeline",
     securityTimelineRouter
+);
+app.use(
+    "/api/security-analytics",
+    securityAnalyticsRouter
 );
 app.use(
     "/api/credential-exposure",
