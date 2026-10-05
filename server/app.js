@@ -12,6 +12,8 @@ const responseActionsRouter =
     require("./routes/securityTimeline");
 const credentialExposureRouter =
     require("./routes/credentialExposure");
+    const networkIntelligenceRouter =
+    require("./routes/networkIntelligence");
 const app = express();
 
 app.use(cors());
@@ -31,6 +33,10 @@ const evidenceRouter =
     require("./routes/evidence");
 
 app.use("/api/evidence", evidenceRouter);
+app.use(
+    "/api/network-intelligence",
+    networkIntelligenceRouter
+);
 app.use(
     "/api/security-timeline",
     securityTimelineRouter
