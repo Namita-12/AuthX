@@ -312,6 +312,7 @@ const SecurityEvents = () => {
     const openInvestigation = async (
         event
     ) => {
+
         setSelectedEvent(event);
         setEvidence(null);
         setEvidenceError("");
@@ -393,7 +394,283 @@ const SecurityEvents = () => {
         getDecision(selectedEvent);
 
     return (
-        <div className="events-page">
+    <div className="events-page">
+
+        {selectedEvent && (
+    <div
+        className="investigation-overlay"
+        onClick={closeInvestigation}
+    >
+        <aside
+            className="investigation-drawer"
+            onClick={(event) =>
+                event.stopPropagation()
+            }
+        >
+            <div className="investigation-header">
+                <div>
+                    <span className="investigation-kicker">
+                        EVENT INVESTIGATION
+                    </span>
+
+                    <h2>
+                        {getEventTitle(selectedEvent)}
+                    </h2>
+
+                    <span className="investigation-time">
+                        {formatDate(
+                            getTimestamp(selectedEvent)
+                        )}
+                    </span>
+                </div>
+
+                <button
+                    type="button"
+                    className="investigation-close"
+                    onClick={closeInvestigation}
+                >
+                    ×
+                </button>
+            </div>
+
+            <div className="investigation-content">
+
+                <div className="investigation-risk-hero">
+                    <div>
+                        <span>RISK SCORE</span>
+
+                        <strong>
+                            {selectedScore}
+                            <small>/ 100</small>
+                        </strong>
+                    </div>
+
+                    <span
+                        className={`investigation-risk-badge ${String(
+                            selectedRisk
+                        ).toLowerCase()}`}
+                    >
+                        {selectedRisk}
+                    </span>
+                </div>
+
+                {evidenceLoading && (
+                    <div className="investigation-section">
+                        <div className="evidence-loading">
+                            Loading security evidence...
+                        </div>
+                    </div>
+                )}
+
+                {evidenceError && (
+                    <div className="investigation-section">
+                        <div className="evidence-error">
+                            {evidenceError}
+                        </div>
+                    </div>
+                )}
+
+                <div className="investigation-section">
+                    <div className="section-label">
+                        RISK SIGNALS
+                    </div>
+
+                    {selectedReasons?.length > 0 ? (
+                        <div className="reason-list">
+                            {selectedReasons.map(
+                                (reason, index) => (
+                                    <div
+                                        className="reason-item"
+                                        key={index}
+                                    >
+                                        {reason}
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    ) : (
+                        <div className="no-reasons">
+                            No risk signals were
+                            recorded for this event.
+                        </div>
+                    )}
+                </div>
+
+                <div className="investigation-section">
+                    <div className="section-label">
+                        SECURITY DECISION
+                    </div>
+
+                    <div className="decision-card">
+                        <div>
+                            <span>
+                                AUTHX RESPONSE
+                            </span>
+
+                            <strong>
+                                {selectedDecision}
+                            </strong>
+                        </div>
+
+                        <span className="decision-arrow">
+                            →
+                        </span>
+                    </div>
+                </div>
+
+                <div className="investigation-section">
+                    <div className="section-label">
+                        EVENT CONTEXT
+                    </div>
+
+                    <div className="context-grid">
+
+                        <div>
+                            <label>
+                                IP ADDRESS
+                            </label>
+
+                            <strong>
+                                {selectedData?.ipAddress ||
+                                    "Unknown"}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <label>
+                                LOCATION
+                            </label>
+
+                            <strong>
+                                {getLocation(
+                                    evidence?.event ||
+                                    selectedEvent
+                                )}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <label>
+                                DEVICE
+                            </label>
+
+                            <strong>
+                                {selectedData?.device ||
+                                    "Unknown"}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <label>
+                                BROWSER
+                            </label>
+
+                            <strong>
+                                {selectedData?.browser ||
+                                    "Unknown"}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <label>
+                                TIMEZONE
+                            </label>
+
+                            <strong>
+                                {selectedData?.timezone ||
+                                    "Unknown"}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <label>
+                                EVENT TIME
+                            </label>
+
+                            <strong>
+                                {formatDate(
+                                    getTimestamp(
+                                        evidence?.event ||
+                                        selectedEvent
+                                    )
+                                )}
+                            </strong>
+                        </div>
+
+                    </div>
+                </div>
+
+                {evidence?.incident && (
+                    <div className="investigation-section">
+
+                        <div className="section-label">
+                            RELATED INCIDENT
+                        </div>
+
+                        <div className="incident-evidence-card">
+
+                            <div>
+                                <span>
+                                    SECURITY INCIDENT
+                                </span>
+
+                                <strong>
+                                    Related security
+                                    incident detected
+                                </strong>
+                            </div>
+
+                            <span
+                                className={`incident-status ${String(
+                                    evidence.incident.status
+                                ).toLowerCase()}`}
+                            >
+                                {evidence.incident.status}
+                            </span>
+
+                            {evidence.incident.evidence
+                                ?.length > 0 && (
+                                <div className="incident-evidence-list">
+
+                                    <span>
+                                        EVIDENCE
+                                    </span>
+
+                                    {evidence.incident.evidence.map(
+                                        (
+                                            item,
+                                            index
+                                        ) => (
+                                            <div
+                                                key={index}
+                                            >
+                                                {item}
+                                            </div>
+                                        )
+                                    )}
+
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+                )}
+
+                <div className="investigation-section">
+                    <div className="section-label">
+                        EVENT ID
+                    </div>
+
+                    <div className="event-id-box">
+                        {getEventId(selectedEvent) ||
+                            "Unavailable"}
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+)}
 
             <div className="events-header">
 
