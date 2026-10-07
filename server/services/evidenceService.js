@@ -13,7 +13,7 @@ const getUserEvidence = async (userId, eventId) => {
 
     const incident = await SecurityIncident.findOne({
         userId,
-        relatedEvent: event._id
+        relatedEventId: event._id
     });
 
     return {

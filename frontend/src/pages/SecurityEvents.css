@@ -239,11 +239,41 @@
 
 .events-table tbody tr {
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.15s ease;
 }
 
 .events-table tbody tr:hover {
     background: #111a27;
+}
+
+.events-table tbody tr td {
+    cursor: pointer;
+}
+
+.view-event {
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+
+    color: #8b9bb2;
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.view-event:hover {
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+.events-table tbody tr:hover .view-event {
+    color: #dce5f2;
+    transform: translateX(3px);
 }
 
 .event-name {
