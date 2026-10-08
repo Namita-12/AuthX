@@ -71,9 +71,31 @@ timezone: {
 },
 
         riskReasons: {
-            type: [String],
-            default: []
+    type: [String],
+    default: []
+},
+
+riskContributions: {
+    type: [
+        {
+            signal: {
+                type: String,
+                required: true
+            },
+
+            points: {
+                type: Number,
+                required: true
+            },
+
+            explanation: {
+                type: String,
+                required: true
+            }
         }
+    ],
+    default: []
+}
     },
     {
         timestamps: true

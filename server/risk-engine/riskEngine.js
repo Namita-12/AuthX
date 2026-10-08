@@ -1,6 +1,7 @@
 function calculateRisk(event) {
     let score = 0;
     const reasons = [];
+    const contributions = [];
 
     // -----------------------------------------
     // 1. FAILED LOGIN
@@ -8,7 +9,15 @@ function calculateRisk(event) {
 
     if (event.eventType === "LOGIN_FAILED") {
         score += 25;
+
         reasons.push("Login attempt failed");
+
+        contributions.push({
+            signal: "Failed login",
+            points: 25,
+            explanation:
+                "The authentication attempt failed."
+        });
     }
 
     // -----------------------------------------
@@ -17,7 +26,15 @@ function calculateRisk(event) {
 
     if (event.isNewDevice === true) {
         score += 20;
+
         reasons.push("Login from a new device");
+
+        contributions.push({
+            signal: "New device",
+            points: 20,
+            explanation:
+                "The login originated from a device not seen in the user's baseline."
+        });
     }
 
     // -----------------------------------------
@@ -26,7 +43,15 @@ function calculateRisk(event) {
 
     if (event.isNewLocation === true) {
         score += 20;
+
         reasons.push("Login from a new location");
+
+        contributions.push({
+            signal: "New location",
+            points: 20,
+            explanation:
+                "The login originated from a location outside the user's normal baseline."
+        });
     }
 
     // -----------------------------------------
@@ -35,7 +60,17 @@ function calculateRisk(event) {
 
     if (event.isUnusualTime === true) {
         score += 15;
-        reasons.push("Login occurred at an unusual time");
+
+        reasons.push(
+            "Login occurred at an unusual time"
+        );
+
+        contributions.push({
+            signal: "Unusual login time",
+            points: 15,
+            explanation:
+                "The authentication occurred outside the user's normal login-time pattern."
+        });
     }
 
     // -----------------------------------------
@@ -44,7 +79,17 @@ function calculateRisk(event) {
 
     if (event.recentFailedAttempts >= 3) {
         score += 25;
-        reasons.push("Multiple recent failed login attempts");
+
+        reasons.push(
+            "Multiple recent failed login attempts"
+        );
+
+        contributions.push({
+            signal: "Multiple failed attempts",
+            points: 25,
+            explanation:
+                "Three or more recent failed authentication attempts were detected."
+        });
     }
 
     // -----------------------------------------
@@ -53,7 +98,17 @@ function calculateRisk(event) {
 
     if (event.recentFailedAttempts >= 4) {
         score += 30;
-        reasons.push("Possible brute-force attack detected");
+
+        reasons.push(
+            "Possible brute-force attack detected"
+        );
+
+        contributions.push({
+            signal: "Possible brute-force attack",
+            points: 30,
+            explanation:
+                "Four or more recent failed attempts indicate possible automated credential guessing."
+        });
     }
 
     // -----------------------------------------
@@ -79,7 +134,8 @@ function calculateRisk(event) {
     return {
         score,
         level,
-        reasons
+        reasons,
+        contributions
     };
 }
 

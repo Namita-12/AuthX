@@ -1068,3 +1068,173 @@
         grid-template-columns: 1fr;
     }
 }
+/* =========================================================
+   RISK SIGNAL CARDS
+   ========================================================= */
+
+.risk-signal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.risk-signal-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 14px;
+
+    border: 1px solid #263246;
+    border-radius: 11px;
+
+    background: #0f141e;
+}
+
+.risk-signal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.25);
+
+    color: #ffae75;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.risk-signal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.risk-signal-content strong {
+    color: #dce4ef;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+.risk-signal-content span {
+    color: #66768d;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+.no-risk-signals {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 14px;
+
+    border: 1px solid rgba(34, 197, 94, 0.18);
+    border-radius: 11px;
+
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.no-risk-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: rgba(34, 197, 94, 0.12);
+
+    color: #72e39a;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.no-risk-signals > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.no-risk-signals strong {
+    color: #dce4ef;
+
+    font-size: 13px;
+}
+
+.no-risk-signals span {
+    color: #66768d;
+
+    font-size: 11px;
+}/* =========================================================
+   RISK BREAKDOWN
+   ========================================================= */
+
+.risk-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.risk-breakdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 14px;
+
+    border: 1px solid #263246;
+    border-radius: 11px;
+
+    background: #0f141e;
+}
+
+.risk-breakdown-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.risk-breakdown-content strong {
+    color: #dce4ef;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.risk-breakdown-content span {
+    color: #66768d;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.risk-breakdown-item b {
+    flex-shrink: 0;
+
+    color: #ffae75;
+
+    font-size: 14px;
+    font-weight: 700;
+}

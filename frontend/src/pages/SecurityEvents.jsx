@@ -97,7 +97,16 @@ const SecurityEvents = () => {
         );
     };
 
-    const getRiskReasons = (event) => {
+    const getRiskReasons = (event) => { const getRiskContributions = (event) => {
+    const data = getEventData(event);
+
+    return (
+        data?.riskContributions ||
+        data?.risk?.contributions ||
+        event?.riskContributions ||
+        []
+    );
+};
         const data = getEventData(event);
 
         return (
@@ -107,7 +116,16 @@ const SecurityEvents = () => {
             []
         );
     };
+const getRiskContributions = (event) => {
+    const data = getEventData(event);
 
+    return (
+        data?.riskContributions ||
+        data?.risk?.contributions ||
+        event?.riskContributions ||
+        []
+    );
+};
     const getDecision = (event) => {
         const data = getEventData(event);
 
@@ -389,7 +407,9 @@ const SecurityEvents = () => {
     const selectedReasons =
         evidence?.risk?.reasons ||
         getRiskReasons(selectedEvent);
-
+const selectedContributions =
+    evidence?.risk?.contributions ||
+    getRiskContributions(selectedEvent);
     const selectedDecision =
         getDecision(selectedEvent);
 
@@ -469,33 +489,109 @@ const SecurityEvents = () => {
                         </div>
                     </div>
                 )}
+<div className="investigation-section">
+    <div className="section-label">
+        RISK BREAKDOWN
+    </div>
 
-                <div className="investigation-section">
-                    <div className="section-label">
-                        RISK SIGNALS
+    {selectedContributions?.length > 0 ? (
+        <div className="risk-breakdown-list">
+            {selectedContributions.map(
+                (item, index) => (
+                    <div
+                        className="risk-breakdown-item"
+                        key={index}
+                    >
+                        <div className="risk-breakdown-content">
+                            <strong>
+                                {item.signal}
+                            </strong>
+
+                            <span>
+                                {item.explanation}
+                            </span>
+                        </div>
+
+                        <b>
+                            +{item.points}
+                        </b>
                     </div>
+                )
+            )}
+        </div>
+    ) : (
+        <div className="no-risk-signals">
+            <div className="no-risk-icon">
+                ✓
+            </div>
 
-                    {selectedReasons?.length > 0 ? (
-                        <div className="reason-list">
-                            {selectedReasons.map(
-                                (reason, index) => (
-                                    <div
-                                        className="reason-item"
-                                        key={index}
-                                    >
-                                        {reason}
-                                    </div>
-                                )
-                            )}
-                        </div>
-                    ) : (
-                        <div className="no-reasons">
-                            No risk signals were
-                            recorded for this event.
-                        </div>
-                    )}
-                </div>
+            <div>
+                <strong>
+                    No scored signals
+                </strong>
 
+                <span>
+                    No individual risk
+                    contributions were recorded
+                    for this event.
+                </span>
+            </div>
+        </div>
+    )}
+</div>
+                <div className="investigation-section">
+    <div className="section-label">
+        RISK SIGNALS
+    </div>
+
+    {selectedReasons?.length > 0 ? (
+        <div className="risk-signal-list">
+            {selectedReasons.map(
+                (reason, index) => (
+                    <div
+                        className="risk-signal-card"
+                        key={index}
+                    >
+                        <div className="risk-signal-icon">
+                            !
+                        </div>
+
+                        <div className="risk-signal-content">
+                            <strong>
+                                {reason}
+                            </strong>
+
+                            <span>
+                                Security signal
+                                contributing to
+                                the calculated
+                                risk score.
+                            </span>
+                        </div>
+                    </div>
+                )
+            )}
+        </div>
+    ) : (
+        <div className="no-risk-signals">
+            <div className="no-risk-icon">
+                ✓
+            </div>
+
+            <div>
+                <strong>
+                    No risk signals detected
+                </strong>
+
+                <span>
+                    This event matches the
+                    user's normal security
+                    baseline.
+                </span>
+            </div>
+        </div>
+    )}
+</div>
                 <div className="investigation-section">
                     <div className="section-label">
                         SECURITY DECISION

@@ -350,9 +350,16 @@ router.post("/login", async (req, res) => {
                             .level,
 
                     riskReasons:
-                        securityEvaluation
-                            .risk
-                            .evidence
+    securityEvaluation
+        .risk
+        .evidence,
+
+riskContributions:
+    securityEvaluation
+        .risk
+        .contributions
+
+
 
                 });
                 const incident =

@@ -29,11 +29,11 @@ const getUserEvidence = async (userId, eventId) => {
         },
 
         risk: {
-            score: event.riskScore,
-            level: event.riskLevel,
-            reasons: event.riskReasons || []
-        },
-
+    score: event.riskScore,
+    level: event.riskLevel,
+    reasons: event.riskReasons || [],
+    contributions: event.riskContributions || []
+},
         incident: incident
             ? {
                 id: incident._id,
