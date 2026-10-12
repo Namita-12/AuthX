@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const authEventSchema = new mongoose.Schema(
@@ -11,12 +12,12 @@ const authEventSchema = new mongoose.Schema(
         eventType: {
             type: String,
             enum: [
-    "LOGIN_SUCCESS",
-    "LOGIN_FAILED",
-    "LOGIN_CHALLENGE_REQUIRED",
-    "LOGIN_BLOCKED",
-    "LOGOUT"
-],
+                "LOGIN_SUCCESS",
+                "LOGIN_FAILED",
+                "LOGIN_CHALLENGE_REQUIRED",
+                "LOGIN_BLOCKED",
+                "LOGOUT"
+            ],
             required: true
         },
 
@@ -47,16 +48,18 @@ const authEventSchema = new mongoose.Schema(
             type: String,
             trim: true
         },
-timezone: {
-    type: String,
-    trim: true
-},
+
+        timezone: {
+            type: String,
+            trim: true
+        },
+
         timestamp: {
             type: Date,
             default: Date.now
         },
 
-        // AuthX risk analysis
+        // Authentication risk analysis
         riskScore: {
             type: Number,
             default: 0,
@@ -65,37 +68,55 @@ timezone: {
         },
 
         riskLevel: {
-    type: String,
-    enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
-    default: "LOW"
-},
+            type: String,
+            enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+            default: "LOW"
+        },
 
         riskReasons: {
-    type: [String],
-    default: []
-},
+            type: [String],
+            default: []
+        },
 
-riskContributions: {
-    type: [
-        {
-            signal: {
-                type: String,
-                required: true
-            },
+        riskContributions: {
+            type: [
+                {
+                    signal: {
+                        type: String,
+                        required: true
+                    },
 
-            points: {
-                type: Number,
-                required: true
-            },
+                    points: {
+                        type: Number,
+                        required: true
+                    },
 
-            explanation: {
-                type: String,
-                required: true
-            }
+                    explanation: {
+                        type: String,
+                        required: true
+                    }
+                }
+            ],
+            default: []
+        },
+
+        // Authentication decision explanation
+        securityDecision: {
+            type: String,
+            enum: [
+                "ALLOW",
+                "REQUIRE_ADDITIONAL_AUTHENTICATION",
+                "BLOCK",
+                "NOT_RECORDED"
+            ],
+            default: "NOT_RECORDED"
+        },
+
+        decisionExplanation: {
+            type: String,
+            default: "",
+            trim: true
         }
-    ],
-    default: []
-}
     },
     {
         timestamps: true

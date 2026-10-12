@@ -24,8 +24,11 @@ const getUserEvidence = async (userId, eventId) => {
             ipAddress: event.ipAddress,
             location: event.location,
             device: event.device,
+
             browser: event.browser,
-            timezone: event.timezone
+            timezone: event.timezone,
+            securityDecision: event.securityDecision || "NOT_RECORDED",
+            decisionExplanation: event.decisionExplanation || ""
         },
 
         risk: {
