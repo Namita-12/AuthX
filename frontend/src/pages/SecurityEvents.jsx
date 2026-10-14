@@ -494,6 +494,25 @@ const selectedContributions =
         RISK BREAKDOWN
     </div>
 
+<div className="investigation-section">
+    <div className="section-label">
+        SECURITY DECISION
+    </div>
+
+    <div className="decision-explanation">
+        <strong>
+            {evidence?.event?.securityDecision ||
+                selectedDecision?.action ||
+                "NOT_RECORDED"}
+        </strong>
+
+        <p>
+            {evidence?.event?.decisionExplanation ||
+                selectedDecision?.message ||
+                "No decision explanation was recorded for this event."}
+        </p>
+    </div>
+</div>
     {selectedContributions?.length > 0 ? (
         <div className="risk-breakdown-list">
             {selectedContributions.map(
