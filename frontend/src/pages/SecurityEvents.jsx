@@ -509,7 +509,7 @@ const selectedContributions =
         <p>
             {evidence?.event?.decisionExplanation ||
                 selectedDecision?.message ||
-                "No decision explanation was recorded for this event."}
+                "Explanation unavailable for this event. Check the recorded risk signals."}
         </p>
     </div>
 </div>
