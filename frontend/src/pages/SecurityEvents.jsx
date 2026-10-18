@@ -134,7 +134,7 @@ const getRiskContributions = (event) => {
             data?.decision ||
             event?.securityDecision ||
             event?.decision ||
-            "ALLOW"
+            "NOT_RECORDED"
         );
     };
 
